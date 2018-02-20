@@ -1,5 +1,4 @@
-<?php 
-
+<?php
 	class Playlist {
 
 		private $conn;
@@ -7,10 +6,10 @@
 		private $name;
 		private $owner;
 
-
 		public function __construct($conn, $data) {
 
 			if(!is_array($data)) {
+				//Data is an id (string)
 				$query = mysqli_query($conn, "SELECT * FROM playlists WHERE id='$data'");
 				$data = mysqli_fetch_array($query);
 			}
@@ -21,6 +20,10 @@
 			$this->owner = $data['owner'];
 		}
 
+		public function getId() {
+			return $this->id;
+		}
+
 		public function getName() {
 			return $this->name;
 		}
@@ -29,17 +32,14 @@
 			return $this->owner;
 		}
 
-		public function getId() {
-			return $this->id;
-		}
-
 		public function getNumberOfSongs() {
 			$query = mysqli_query($this->conn, "SELECT songId FROM playlistSongs WHERE playlistId='$this->id'");
 			return mysqli_num_rows($query);
 		}
 
 		public function getSongIds() {
-			$query = mysqli_query($this->conn, "SELECT songId FROM playlistSongs WHERE playlistId = '$this->id' ORDER BY playlistOrder ASC");
+
+			$query = mysqli_query($this->conn, "SELECT songId FROM playlistSongs WHERE playlistId='$this->id' ORDER BY playlistOrder ASC");
 
 			$array = array();
 
@@ -48,8 +48,28 @@
 			}
 
 			return $array;
+
 		}
 
-	}
+		public static function getPlaylistsDropdown($conn, $username) {
+			$dropdown = '<select class="item playlist">
+							<option value="">Add to playlist</option>';
 
+			$query = mysqli_query($conn, "SELECT id, name FROM playlists WHERE owner='$username'");
+			while($row = mysqli_fetch_array($query)) {
+				$id = $row['id'];
+				$name = $row['name'];
+
+				$dropdown = $dropdown . "<option value='$id'>$name</option>";
+			}
+
+
+			return $dropdown . "</select>";
+		}
+
+
+
+
+
+	}
 ?>

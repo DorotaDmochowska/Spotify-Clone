@@ -18,16 +18,19 @@ $(document).ready(function() {
 	setTrack(newPlaylist[0], newPlaylist, false);
 	updateVolumeProgressBar(audioElement.audio);
 
+
 	$("#nowPlayingBarContainer").on("mousedown touchstart mousemove touchmove", function(e) {
 		e.preventDefault();
 	});
+
 
 	$(".playbackBar .progressBar").mousedown(function() {
 		mouseDown = true;
 	});
 
 	$(".playbackBar .progressBar").mousemove(function(e) {
-		if(mouseDown) {
+		if(mouseDown == true) {
+			//Set time of song, depending on position of mouse
 			timeFromOffset(e, this);
 		}
 	});
@@ -36,17 +39,19 @@ $(document).ready(function() {
 		timeFromOffset(e, this);
 	});
 
+
 	$(".volumeBar .progressBar").mousedown(function() {
 		mouseDown = true;
 	});
 
 	$(".volumeBar .progressBar").mousemove(function(e) {
-		if(mouseDown) {
+		if(mouseDown == true) {
+
 			var percentage = e.offsetX / $(this).width();
 
 			if(percentage >= 0 && percentage <= 1) {
 				audioElement.audio.volume = percentage;
-			}	
+			}
 		}
 	});
 
@@ -60,7 +65,11 @@ $(document).ready(function() {
 
 	$(document).mouseup(function() {
 		mouseDown = false;
-	})
+	});
+
+
+
+
 });
 
 function timeFromOffset(mouse, progressBar) {
@@ -72,15 +81,15 @@ function timeFromOffset(mouse, progressBar) {
 function prevSong() {
 	if(audioElement.audio.currentTime >= 3 || currentIndex == 0) {
 		audioElement.setTime(0);
-	} else {
-		currentIndex--;
+	}
+	else {
+		currentIndex = currentIndex - 1;
 		setTrack(currentPlaylist[currentIndex], currentPlaylist, true);
 	}
 }
 
 function nextSong() {
-
-	if(repeat) {
+	if(repeat == true) {
 		audioElement.setTime(0);
 		playSong();
 		return;
@@ -88,7 +97,8 @@ function nextSong() {
 
 	if(currentIndex == currentPlaylist.length - 1) {
 		currentIndex = 0;
-	} else {
+	}
+	else {
 		currentIndex++;
 	}
 
@@ -113,20 +123,25 @@ function setShuffle() {
 	var imageName = shuffle ? "shuffle-active.png" : "shuffle.png";
 	$(".controlButton.shuffle img").attr("src", "assets/images/icons/" + imageName);
 
-	if(shuffle) {
+	if(shuffle == true) {
+		//Randomize playlist
 		shuffleArray(shufflePlaylist);
 		currentIndex = shufflePlaylist.indexOf(audioElement.currentlyPlaying.id);
-	} else {
+	}
+	else {
+		//shuffle has been deactivated
+		//go back to regular playlist
 		currentIndex = currentPlaylist.indexOf(audioElement.currentlyPlaying.id);
 	}
+
 }
 
 function shuffleArray(a) {
     var j, x, i;
-    for (i = a.length - 1; i > 0; i--) {
-        j = Math.floor(Math.random() * (i + 1));
-        x = a[i];
-        a[i] = a[j];
+    for (i = a.length; i; i--) {
+        j = Math.floor(Math.random() * i);
+        x = a[i - 1];
+        a[i - 1] = a[j];
         a[j] = x;
     }
 }
@@ -140,9 +155,10 @@ function setTrack(trackId, newPlaylist, play) {
 		shuffleArray(shufflePlaylist);
 	}
 
-	if(shuffle) {
+	if(shuffle == true) {
 		currentIndex = shufflePlaylist.indexOf(trackId);
-	} else {
+	}
+	else {
 		currentIndex = currentPlaylist.indexOf(trackId);
 	}
 	pauseSong();
@@ -165,12 +181,14 @@ function setTrack(trackId, newPlaylist, play) {
 			$(".trackInfo .trackName span").attr("onclick", "openPage('album.php?id=" + album.id + "')");
 		});
 
+
 		audioElement.setTrack(track);
 
 		if(play == true) {
 			playSong();
 		}
 	});
+
 }
 
 function playSong() {
@@ -189,7 +207,6 @@ function pauseSong() {
 	$(".controlButton.pause").hide();
 	audioElement.pause();
 }
-
 </script>
 
 
@@ -200,7 +217,7 @@ function pauseSong() {
 		<div id="nowPlayingLeft">
 			<div class="content">
 				<span class="albumLink">
-					<img role="link" tabindex="0" src="" class="albumArtwork" >
+					<img role="link" tabindex="0" src="" class="albumArtwork">
 				</span>
 
 				<div class="trackInfo">
@@ -210,7 +227,7 @@ function pauseSong() {
 					</span>
 
 					<span class="artistName">
-						<spanrole role="link" tabindex="0"></span>
+						<span role="link" tabindex="0"></span>
 					</span>
 
 				</div>
@@ -277,7 +294,7 @@ function pauseSong() {
 		<div id="nowPlayingRight">
 			<div class="volumeBar">
 
-				<button class="controlButton volume" title="Volume button" onclick="setMute();">
+				<button class="controlButton volume" title="Volume button" onclick="setMute()">
 					<img src="assets/images/icons/volume.png" alt="Volume">
 				</button>
 
